@@ -7,6 +7,10 @@ export default function StudentInfo() {
       <Link href="https://github.com/JGOFF125/Web-Dev">
         My GitHub Repository
       </Link>
+      <p>Matthew Pereira</p>
+      <Link href= "https://github.com/MatthewPereira6317/cprg306-assignments">
+      Matthew's Repository
+      </Link>
     </section>
   );
 }
