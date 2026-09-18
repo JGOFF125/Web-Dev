@@ -11,6 +11,10 @@ export default function StudentInfo() {
       <Link href= "https://github.com/MatthewPereira6317/cprg306-assignments">
       Matthew's Repository
       </Link>
+      <p>Dialyn Villostas</p>
+      <Link href= "https://github.com/DialynV/cprg306-assignments">
+      Dialyn's Repository
+      </Link>
     </section>
   );
 }
