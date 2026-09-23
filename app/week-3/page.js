@@ -31,6 +31,18 @@ export default function Page() {
               Joaquin Shopping List 
             </Link>
           </li>
+          <li className="border-b border-dashed border-stone-300 py-4">
+            <p className="text-lg font-semibold text-stone-900">
+              Dialyn
+            </p>
+
+            <Link
+              href="/week-3/dialyn"
+              className="mt-1 inline-block text-amber-700 underline hover:text-amber-900"
+            >
+              Dialyn Shopping List 
+            </Link>
+          </li>
         </ul>
       </section>
     </main>
