@@ -1,16 +1,5 @@
 import Link from "next/link";
 
-export default function Page() {
-  return (
-    <main>
-      <h1>CPRG 306: Web Development 2 - Assignments</h1>
-      <Link href="/week-2">Week 2</Link>
-      <Link href="/week-3">Week 3</Link>
-    </main>
-  );
-}
-import Link from "next/link";
-
 export const metadata = {
   title: "Week 3 Shopping Lists",
 };
@@ -40,18 +29,6 @@ export default function Page() {
               className="mt-1 inline-block text-amber-700 underline hover:text-amber-900"
             >
               Joaquin Shopping List 
-            </Link>
-          </li>
-                <li className="border-b border-dashed border-stone-300 py-4">
-            <p className="text-lg font-semibold text-stone-900">
-              Adil
-            </p>
-
-            <Link
-              href="/week-3/Adil"
-              className="mt-1 inline-block text-amber-700 underline hover:text-amber-900"
-            >
-              Adil's Shopping List 
             </Link>
           </li>
           <li className="border-b border-dashed border-stone-300 py-4">
