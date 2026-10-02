@@ -17,7 +17,7 @@ export default function StudentInfo() {
       </Link>
     <p>Adil Khan</p>
       <Link href= "https://github.com/adilkhanayk2000/cprg306-assignments">
-      Adil's Repository
+      Adils Repository
       </Link>
     </section>
   );
