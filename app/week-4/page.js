@@ -38,6 +38,19 @@ export default function Page() {
               Dialyn's Week 4 Assignment
             </Link>
           </li>
+
+          <li className="border-b border-slate-200 py-4">
+            <p className="text-lg font-semibold text-slate-900">
+              Matthew Pereira
+            </p>
+
+            <Link
+              href="/week-4/Matthew"
+              className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
+            >
+              Matthew's Week 4 Assignment
+            </Link>
+          </li>
         </ul>
       </section>
     </main>
