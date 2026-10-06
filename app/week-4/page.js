@@ -35,7 +35,7 @@ export default function Page() {
               href="/week-4/dialyn"
               className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
             >
-              Dialyn's Week 4 Assignment
+              Dialyn&apos;s Week 4 Assignment
             </Link>
           </li>
 
@@ -48,7 +48,7 @@ export default function Page() {
               href="/week-4/Matthew"
               className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
             >
-              Matthew's Week 4 Assignment
+              Matthew&apos;s Week 4 Assignment
             </Link>
           </li>
         </ul>
