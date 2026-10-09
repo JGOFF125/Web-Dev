@@ -30,7 +30,17 @@ export default function Page() {
               href="/week-5/dialyn"
               className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
             >
-             Dialyn&apos;s Week 5 Assignment
+             Dialyn's Week 5 Assignment
+            </Link>
+          </li>
+
+          <li className="border-b border-slate-200 py-4">
+            <p className="text-lg font-semibold text-slate-900">Matthew Pereira</p>
+            <Link
+              href="/week-5/matthew"
+              className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
+            >
+             Matthew's Week 5 Assignment
             </Link>
           </li>
         </ul>
