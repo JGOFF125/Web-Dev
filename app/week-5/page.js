@@ -5,7 +5,7 @@ export default function Page() {
     <main className="min-h-screen bg-slate-100 px-6 py-12">
       <section className="mx-auto max-w-xl rounded-lg border border-slate-300 bg-white p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Week 4 Assignment
+          Week 5 Assignment
         </p>
 
         <h1 className="mt-1 mb-8 text-4xl font-bold text-slate-900">
@@ -14,41 +14,32 @@ export default function Page() {
 
         <ul>
           <li className="border-b border-slate-200 py-4">
-            <p className="text-lg font-semibold text-slate-900">
-              Joaquin Urbano
-            </p> 
-
+            <p className="text-lg font-semibold text-slate-900">Joaquin Urbano</p>
             <Link
-              href="/week-4/joaquin"
+              href="/week-5/joaquin"
               className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
             >
-              Joaquins Week 4 Assignment 
+              Joaquin’s Week 5 Assignment
             </Link>
           </li>
 
           <li className="border-b border-slate-200 py-4">
-            <p className="text-lg font-semibold text-slate-900">
-              Dialyn Villostas
-            </p>
-
+            <p className="text-lg font-semibold text-slate-900">Dialyn Villostas</p>
             <Link
-              href="/week-4/dialyn"
+              href="/week-5/dialyn"
               className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
             >
-              Dialyn&apos;s Week 4 Assignment
+             Dialyn's Week 5 Assignment
             </Link>
           </li>
 
           <li className="border-b border-slate-200 py-4">
-            <p className="text-lg font-semibold text-slate-900">
-              Matthew Pereira
-            </p>
-
+            <p className="text-lg font-semibold text-slate-900">Matthew Pereira</p>
             <Link
-              href="/week-4/Matthew"
+              href="/week-5/matthew"
               className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
             >
-              Matthew&apos;s Week 4 Assignment
+             Matthew's Week 5 Assignment
             </Link>
           </li>
         </ul>
