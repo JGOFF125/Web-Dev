@@ -1,7 +1,8 @@
-import Link from "next/link";
+import NewItem from "./new-item";
 
 export default function Page() {
   return (
+<<<<<<< Updated upstream
     <main className="min-h-screen bg-slate-100 px-6 py-12">
       <section className="mx-auto max-w-xl rounded-lg border border-slate-300 bg-white p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
@@ -34,6 +35,10 @@ export default function Page() {
           </li>
         </ul>
       </section>
+=======
+    <main className="flex min-h-screen justify-center bg-black p-6">
+      <NewItem />
+>>>>>>> Stashed changes
     </main>
   );
 }
