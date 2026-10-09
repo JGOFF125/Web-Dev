@@ -22,6 +22,16 @@ export default function Page() {
               Joaquin’s Week 5 Assignment
             </Link>
           </li>
+
+          <li className="border-b border-slate-200 py-4">
+            <p className="text-lg font-semibold text-slate-900">Dialyn Villostas</p>
+            <Link
+              href="/week-5/dialyn"
+              className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
+            >
+             Dialyn&apos;s Week 5 Assignment
+            </Link>
+          </li>
         </ul>
       </section>
     </main>
