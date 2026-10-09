@@ -2,53 +2,8 @@ import NewItem from "./new-item";
 
 export default function Page() {
   return (
-<<<<<<< Updated upstream
-    <main className="min-h-screen bg-slate-100 px-6 py-12">
-      <section className="mx-auto max-w-xl rounded-lg border border-slate-300 bg-white p-8 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Week 5 Assignment
-        </p>
-
-        <h1 className="mt-1 mb-8 text-4xl font-bold text-slate-900">
-          Shopping Lists
-        </h1>
-
-        <ul>
-          <li className="border-b border-slate-200 py-4">
-            <p className="text-lg font-semibold text-slate-900">Joaquin Urbano</p>
-            <Link
-              href="/week-5/joaquin"
-              className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
-            >
-              Joaquin’s Week 5 Assignment
-            </Link>
-          </li>
-
-          <li className="border-b border-slate-200 py-4">
-            <p className="text-lg font-semibold text-slate-900">Dialyn Villostas</p>
-            <Link
-              href="/week-5/dialyn"
-              className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
-            >
-             Dialyn's Week 5 Assignment
-            </Link>
-          </li>
-
-          <li className="border-b border-slate-200 py-4">
-            <p className="text-lg font-semibold text-slate-900">Matthew Pereira</p>
-            <Link
-              href="/week-5/matthew"
-              className="mt-1 inline-block text-emerald-700 underline hover:text-emerald-900"
-            >
-             Matthew's Week 5 Assignment
-            </Link>
-          </li>
-        </ul>
-      </section>
-=======
     <main className="flex min-h-screen justify-center bg-black p-6">
       <NewItem />
->>>>>>> Stashed changes
     </main>
   );
 }
