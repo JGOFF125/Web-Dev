@@ -7,69 +7,77 @@ import items from "./items.json";
 export default function ItemList() {
   const [sortBy, setSortBy] = useState("name");
 
-  // Copy the list so the original data stays the same
   const sortedItems = [...items].sort((a, b) => {
-    if (sortBy === "category") {
-      return a.category.localeCompare(b.category) || a.name.localeCompare(b.name);
+    if (sortBy === "name") {
+      return a.name.localeCompare(b.name);
     }
-
-    return a.name.localeCompare(b.name);
+    if (sortBy === "category") {
+      return a.category.localeCompare(b.category);
+    }
+    return 0;
   });
 
-  // Put items with the same category together
   const groupedItems = sortedItems.reduce((groups, item) => {
     if (!groups[item.category]) {
       groups[item.category] = [];
     }
-
     groups[item.category].push(item);
     return groups;
   }, {});
 
+  const buttonStyle = (value) =>
+    `p-1 m-2 w-36 rounded-md font-semibold ${
+      sortBy === value
+        ? "bg-emerald-500 text-slate-950"
+        : "bg-slate-700 text-white hover:bg-slate-600"
+    }`;
+
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center gap-2" role="group" aria-label="Sort shopping list">
-        <span className="mr-2 font-semibold text-stone-700">Sort by:</span>
-        {[
-          { value: "name", label: "Name" },
-          { value: "category", label: "Category" },
-          { value: "group", label: "Group by category" },
-        ].map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => setSortBy(option.value)}
-            aria-pressed={sortBy === option.value}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors focus:outline-2 focus:outline-offset-2 focus:outline-amber-800 ${
-              sortBy === option.value
-                ? "bg-amber-800 text-white"
-                : "bg-stone-200 text-stone-800 hover:bg-stone-300"
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
+      <div className="flex items-center m-2 text-white">
+        <span className="mr-2">Sort by:</span>
+        <button onClick={() => setSortBy("name")} className={buttonStyle("name")}>
+          Name
+        </button>
+        <button onClick={() => setSortBy("category")} className={buttonStyle("category")}>
+          Category
+        </button>
+        <button onClick={() => setSortBy("grouped")} className={buttonStyle("grouped")}>
+          Grouped Category
+        </button>
       </div>
 
-      {sortBy === "group" ? (
-        <div className="space-y-6">
-          {Object.keys(groupedItems).sort().map((category) => (
-            <section key={category}>
-              <h2 className="border-b border-stone-300 pb-2 text-xl font-bold capitalize text-amber-800">
+      {sortBy === "grouped" ? (
+        Object.keys(groupedItems)
+          .sort()
+          .map((category) => (
+            <div key={category}>
+              <h2 className="text-xl font-bold text-emerald-400 capitalize m-2">
                 {category}
               </h2>
-              <ul className="grid gap-4 md:grid-cols-2">
-                {groupedItems[category].map((item) => (
-                  <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} />
-                ))}
+              <ul>
+                {groupedItems[category]
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((item) => (
+                    <Item
+                      key={item.id}
+                      name={item.name}
+                      quantity={item.quantity}
+                      category={item.category}
+                    />
+                  ))}
               </ul>
-            </section>
-          ))}
-        </div>
+            </div>
+          ))
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul>
           {sortedItems.map((item) => (
-            <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} />
+            <Item
+              key={item.id}
+              name={item.name}
+              quantity={item.quantity}
+              category={item.category}
+            />
           ))}
         </ul>
       )}
