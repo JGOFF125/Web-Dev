@@ -22,7 +22,6 @@ export default function Home() {
             Week 4 Assignment
           </Link>
         </li>
-      </ul>
      <li>
           <Link href="/week-6">
             Week 6 Assignment
