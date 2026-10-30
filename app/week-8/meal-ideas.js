@@ -9,7 +9,22 @@ async function fetchMealIdeas(ingredient, signal) {
   const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`, { signal });
   if (!response.ok) throw new Error("The meal service is unavailable right now");
   const data = await response.json();
-  return Array.isArray(data.meals) ? data.meals : [];
+  const results = Array.isArray(data.meals) ? data.meals : [];
+  if (!results.length) return results;
+
+  try {
+    const mexicanResponse = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=Mexican", { signal });
+    if (!mexicanResponse.ok) return results;
+    const mexicanData = await mexicanResponse.json();
+    const mexicanIds = new Set((mexicanData.meals || []).map((meal) => meal.idMeal));
+
+    // I show Mexican matches first and keep the other meals too
+    return results.map((meal) => ({ ...meal, isMexican: mexicanIds.has(meal.idMeal) }))
+      .sort((a, b) => Number(b.isMexican) - Number(a.isMexican) || a.strMeal.localeCompare(b.strMeal));
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    return results;
+  }
 }
 
 export default function MealIdeas({ ingredient }) {
@@ -55,6 +70,7 @@ export default function MealIdeas({ ingredient }) {
         <div>
           <p className={styles.eyebrow}>A little inspiration</p>
           <h2 id="meal-heading">Meal ideas</h2>
+          <p className={styles.cuisineHint}>Mexican favourites first, whenever there’s a match</p>
         </div>
         <span className={styles.listMark} aria-hidden="true">✦</span>
       </div>
@@ -83,7 +99,10 @@ export default function MealIdeas({ ingredient }) {
                   {meal.strMealThumb && (
                     <Image src={meal.strMealThumb} alt="" width={72} height={72} unoptimized className={styles.mealImage} />
                   )}
-                  <h3>{meal.strMeal}</h3>
+                  <div className={styles.mealDetails}>
+                    <h3>{meal.strMeal}</h3>
+                    {meal.isMexican && <span className={styles.mexicanBadge}>Mexican</span>}
+                  </div>
                 </li>
               ))}
             </ul>
