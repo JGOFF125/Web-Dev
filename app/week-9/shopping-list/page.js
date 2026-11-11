@@ -33,7 +33,7 @@ function ShoppingList() {
     const cleanedName = item.name.split(",")[0]
       .replace(/[\p{Extended_Pictographic}\p{Regional_Indicator}\u200d\ufe0f]/gu, "")
       .trim().toLowerCase().replace(/\s+/g, " ");
-    const ingredientNames = { "chicken breasts": "chicken breast", bananas: "banana" };
+    const ingredientNames = { bananas: "banana" };
     setSelectedItemName(ingredientNames[cleanedName] || cleanedName);
     setSelectedItemId(item.id);
   }
