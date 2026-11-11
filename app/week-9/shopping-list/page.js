@@ -5,6 +5,7 @@ import Link from "next/link";
 import NewItem from "./new-item";
 import ItemList from "./item-list";
 import MealIdeas from "./meal-ideas";
+import PantryIdeas from "./pantry-ideas";
 import itemsData from "./items.json";
 import styles from "./shopping-list.module.css";
 import { useUserAuth } from "../_utils/auth-context";
@@ -83,7 +84,10 @@ function ShoppingList() {
               <ItemList items={items} onItemSelect={handleItemSelect} selectedItemId={selectedItemId} />
             </section>
           </div>
-          <MealIdeas ingredient={selectedItemName} />
+          <div className={styles.shoppingColumn}>
+            <PantryIdeas items={items} />
+            <MealIdeas ingredient={selectedItemName} />
+          </div>
         </div>
         <p className={styles.footer}>Made for the everyday · Items reset when you refresh</p>
       </div>
