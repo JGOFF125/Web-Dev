@@ -1,13 +1,18 @@
-export default function Item({ name, quantity, category, onSelect }) {
-  return (
-    <li
-      onClick={onSelect}
-      className="p-3 m-2 bg-slate-800 rounded-md max-w-sm cursor-pointer hover:bg-slate-700"
-    >
-      <p className="text-lg font-semibold text-white">{name}</p>
-      <p className="text-sm text-slate-300">
-        Buy {quantity} in <span className="capitalize">{category}</span>
-      </p>
-    </li>
-  );
+export default function Item({ id, name, category, quantity, selectedItemId, onSelect }) {
+    const isSelected = selectedItemId === id;
+
+    return (
+        <li>
+            <button
+                type="button"
+                className={`w-full rounded-lg border border-gray-200 p-4 text-left shadow-sm ${isSelected ? "bg-yellow-200" : "bg-white"}`}
+                onClick={onSelect}
+                aria-pressed={isSelected}
+            >
+                <h2 className="text-lg font-semibold text-gray-900">{name}</h2>
+                <p className="text-sm text-gray-600">Category: {category}</p>
+                <p className="text-sm text-gray-600">Quantity: {quantity}</p>
+            </button>
+        </li>
+    );
 }

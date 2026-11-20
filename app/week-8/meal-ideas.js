@@ -1,70 +1,64 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-// Fetches meals that use the given ingredient from TheMealDB
-async function fetchMealIdeas(ingredient) {
-  try {
+async function fetchMealIdeas(ingredient, signal) {
     const response = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
+        `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ingredient)}`,
+        { signal }
     );
+    if (!response.ok) {
+        throw new Error("Unable to load meal ideas.");
+    }
     const data = await response.json();
-    // The API returns null when nothing is found, so use an empty array instead
-    return data.meals || [];
-  } catch (error) {
-    console.error("Error fetching meal ideas:", error);
-    return [];
-  }
+    return data.meals ?? [];
 }
 
-export default function MealIdeas({ ingredient }) {
-  const [meals, setMeals] = useState([]);
+export function MealIdeas({ ingredient }) {
+    const [meals, setMeals] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  // Runs again every time the selected ingredient changes
-  useEffect(() => {
-    async function loadMealIdeas() {
-      const result = await fetchMealIdeas(ingredient);
-      setMeals(result);
-    }
+    useEffect(() => {
+        const controller = new AbortController();
 
-    if (ingredient) {
-      loadMealIdeas();
-    }
-  }, [ingredient]);
+        fetchMealIdeas(ingredient, controller.signal)
+            .then(setMeals)
+            .catch((fetchError) => {
+                if (!controller.signal.aborted) {
+                    setError(fetchError);
+                }
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setIsLoading(false);
+                }
+            });
 
-  return (
-    <div className="max-w-md">
-      <h2 className="text-2xl font-bold text-emerald-400 mb-4">Meal Ideas</h2>
+        return () => {
+            controller.abort();
+        };
+    }, [ingredient]);
 
-      {!ingredient && (
-        <p className="text-slate-300">Select an item to see meal ideas.</p>
-      )}
-
-      {ingredient && meals.length === 0 && (
-        <p className="text-slate-300">
-          No meal ideas found for{" "}
-          <span className="font-semibold text-white">{ingredient}</span>.
-        </p>
-      )}
-
-      {ingredient && meals.length > 0 && (
-        <>
-          <p className="text-slate-300 mb-2">
-            Here are some meal ideas using{" "}
-            <span className="font-semibold text-white">{ingredient}</span>:
-          </p>
-          <ul>
-            {meals.map((meal) => (
-              <li
-                key={meal.idMeal}
-                className="p-3 my-2 bg-slate-800 text-white rounded-md"
-              >
-                {meal.strMeal}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </div>
-  );
+    return (
+        <div>
+            <h2 className="mt-4 mb-4 text-2xl font-bold">Meal ideas for {ingredient}</h2>
+            {isLoading ? (
+                <p>Loading meal ideas...</p>
+            ) : error ? (
+                <p role="alert">Could not load meal ideas. Please try again.</p>
+            ) : meals.length === 0 ? (
+                <p>No meal ideas found for the selected ingredient.</p>
+            ) : (
+                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {meals.map((meal) => (
+                        <li key={meal.idMeal}>
+                            <h3>{meal.strMeal}</h3>
+                            <img className="w-full rounded" src={meal.strMealThumb} alt={meal.strMeal} />
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
 }

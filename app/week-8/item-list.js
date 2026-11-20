@@ -1,89 +1,68 @@
-"use client";
+"use client"
 
-import { useState } from "react";
 import Item from "./item";
+import { useState } from "react";
 
-export default function ItemList({ items, onItemSelect }) {
-  const [sortBy, setSortBy] = useState("name");
+export default function ItemList({ items, onItemSelect, selectedItemId }) {
+    const [sortBy, setSortBy] = useState("name");
+    
+    const sortedItems = [...items].sort((a, b) => {
+        if (sortBy === "name") {
+            return a.name.localeCompare(b.name);
+        }
+        return a.category.localeCompare(b.category);
+    });
 
-  // Copy the items prop first so sort() never changes the parent's state
-  const sortedItems = [...items].sort((a, b) => {
-    if (sortBy === "name") {
-      return a.name.localeCompare(b.name);
-    }
-    if (sortBy === "category") {
-      return a.category.localeCompare(b.category);
-    }
-    return 0;
-  });
+    const groupedItems = sortedItems.reduce((groups, item) => {
+        const group = item.category;
+        if (!groups[group]) {
+            groups[group] = [];
+        }
+        groups[group].push(item);
+        return groups;
+    }, {});
 
-  // Builds new arrays for each category, so the prop is never touched
-  const groupedItems = sortedItems.reduce((groups, item) => {
-    if (!groups[item.category]) {
-      groups[item.category] = [];
-    }
-    groups[item.category].push(item);
-    return groups;
-  }, {});
-
-  const buttonStyle = (value) =>
-    `p-1 m-2 w-36 rounded-md font-semibold ${
-      sortBy === value
-        ? "bg-emerald-500 text-slate-950"
-        : "bg-slate-700 text-white hover:bg-slate-600"
-    }`;
-
-  return (
-    <div>
-      <div className="flex items-center m-2 text-white">
-        <span className="mr-2">Sort by:</span>
-        <button onClick={() => setSortBy("name")} className={buttonStyle("name")}>
-          Name
-        </button>
-        <button onClick={() => setSortBy("category")} className={buttonStyle("category")}>
-          Category
-        </button>
-        <button onClick={() => setSortBy("grouped")} className={buttonStyle("grouped")}>
-          Grouped Category
-        </button>
-      </div>
-
-      {sortBy === "grouped" ? (
-        Object.keys(groupedItems)
-          .sort()
-          .map((category) => (
-            <div key={category}>
-              <h2 className="text-xl font-bold text-emerald-400 capitalize m-2">
-                {category}
-              </h2>
-              <ul>
-                {[...groupedItems[category]]
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((item) => (
-                    <Item
-                      key={item.id}
-                      name={item.name}
-                      quantity={item.quantity}
-                      category={item.category}
-                      onSelect={() => onItemSelect(item)}
-                    />
-                  ))}
-              </ul>
+    return (
+        <div>
+            <div className="space-x-3 mb-4">
+                <button onClick={() => setSortBy("name")} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold w-50 text-center py-2 px-4 rounded mb-4">Sort by Name</button>
+                <button onClick={() => setSortBy("category")} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold w-50 text-center py-2 px-4 rounded mb-4">Sort by Category</button>
+                <button onClick={() => setSortBy("group")} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold w-50 text-center py-2 px-4 rounded mb-4">Group by Category</button>
             </div>
-          ))
-      ) : (
-        <ul>
-          {sortedItems.map((item) => (
-            <Item
-              key={item.id}
-              name={item.name}
-              quantity={item.quantity}
-              category={item.category}
-              onSelect={() => onItemSelect(item)}
-            />
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+            {sortBy === "group" ? (
+                <div className="space-y-4">
+                    {Object.entries(groupedItems).map(([category, categoryItems]) => (
+                        <section key={category}>
+                            <h2 className="text-xl font-semibold text-gray-900">{category}</h2>
+                            <ul className="space-y-2">
+                                {categoryItems.map((item) => (
+                                    <Item
+                                        key={item.id}
+                                        id={item.id}
+                                        name={item.name}
+                                        category={item.category}
+                                        quantity={item.quantity}
+                                        selectedItemId={selectedItemId}
+                                        onSelect={() => onItemSelect(item)} />
+                                ))}
+                            </ul>
+                        </section>
+                    ))}
+                </div>
+            ) : (
+                <ul className="space-y-4">
+                    {sortedItems.map((item) => (
+                        <Item
+                            key={item.id}
+                            id={item.id}
+                            name={item.name}
+                            category={item.category}
+                            quantity={item.quantity}
+                            selectedItemId={selectedItemId}
+                            onSelect={() => onItemSelect(item)} />
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
 }

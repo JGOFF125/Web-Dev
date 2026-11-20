@@ -1,84 +1,63 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./shopping-list.module.css";
 
 export default function NewItem({ onAddItem }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState("produce");
 
-  // Stops the quantity from going above 20
-  const increment = () => {
-    if (quantity < 20) {
-      setQuantity(quantity + 1);
-    }
-  };
-
-  // Stops the quantity from going below 1
-  const decrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
-  };
-
-  const handleSubmit = (event) => {
+  function handleSubmit(event) {
     event.preventDefault();
+    if (!name.trim()) return;
 
-    // Random string id so each new item gets a unique key in the list
-    const item = {
-      id: Math.random().toString(36).substring(2, 11),
-      name,
-      quantity,
-      category,
-    };
-
-    // Send the item up to page.js instead of showing an alert
+    const item = { id: crypto.randomUUID(), name: name.trim(), quantity, category };
     onAddItem(item);
 
+    // Get the form ready for the next item
     setName("");
     setQuantity(1);
     setCategory("produce");
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6">
-      <input
-        type="text"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        required
-        placeholder="Item Name"
-        className="w-full rounded-md border border-slate-400 p-3 text-black"
-      />
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.field}>
+        <label htmlFor="item-name">Item name <span aria-hidden="true">*</span></label>
+        <input
+          id="item-name"
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          required
+          placeholder="e.g. Apples, coffee, oat milk"
+        />
+      </div>
 
-      <div className="my-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-12 rounded-md border border-black px-3 py-1 text-xl font-bold text-black">
-            {quantity}
-          </span>
+      <div className={styles.field}>
+        <label htmlFor="item-quantity">Quantity</label>
+        <div className={styles.quantityControl}>
           <button
             type="button"
-            onClick={decrement}
+            aria-label="Decrease quantity"
+            onClick={() => setQuantity((current) => Math.max(1, current - 1))}
             disabled={quantity === 1}
-            className="rounded-md bg-emerald-600 px-4 py-2 font-bold text-white hover:bg-emerald-700 disabled:bg-slate-300"
-          >
-            -
-          </button>
+          >−</button>
+          <output id="item-quantity" aria-live="polite">{quantity}</output>
           <button
             type="button"
-            onClick={increment}
+            aria-label="Increase quantity"
+            onClick={() => setQuantity((current) => Math.min(20, current + 1))}
             disabled={quantity === 20}
-            className="rounded-md bg-emerald-600 px-4 py-2 font-bold text-white hover:bg-emerald-700 disabled:bg-slate-300"
-          >
-            +
-          </button>
+          >+</button>
         </div>
+        <p className={styles.fieldHint}>Choose between 1 and 20</p>
+      </div>
 
-        <select
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-          className="rounded-md border border-slate-300 p-3 text-black"
-        >
+      <div className={styles.field}>
+        <label htmlFor="item-category">Category</label>
+        <select id="item-category" value={category} onChange={(event) => setCategory(event.target.value)}>
           <option value="produce">Produce</option>
           <option value="dairy">Dairy</option>
           <option value="bakery">Bakery</option>
@@ -93,11 +72,8 @@ export default function NewItem({ onAddItem }) {
         </select>
       </div>
 
-      <button
-        type="submit"
-        className="w-full rounded-md bg-emerald-600 p-3 text-lg text-white hover:bg-emerald-700"
-      >
-        Add Item
+      <button type="submit" className={styles.submitButton}>
+        <span aria-hidden="true">+</span> Add to list
       </button>
     </form>
   );
