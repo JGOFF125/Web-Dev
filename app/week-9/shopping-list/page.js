@@ -23,7 +23,6 @@ export default function Page() {
 
     const selectedItem = items.find((item) => item.id === selectedItemId);
 
-    // NEW: Kapag walang naka-login, huwag ipakita ang shopping list
     if (!user) {
         return (
             <main className="min-h-screen bg-[#ddf6fe] p-8 text-black">
