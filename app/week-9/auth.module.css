@@ -1,0 +1,20 @@
+.page { min-height: 100vh; max-width: none; margin: 0; padding: 40px 24px; background: #f3f1e9; color: #25382e; display: grid; align-content: center; }
+.container { width: 100%; max-width: 580px; margin: 0 auto; }
+.backLink { display: inline-block; margin-bottom: 24px; color: #59685d; text-decoration: none; font-size: 14px; }
+.backLink:hover { text-decoration: underline; }
+.card { width: 100%; max-width: 580px; margin: 0 auto; padding: 48px; background: #fffef9; border: 1px solid #dfe2d5; border-radius: 24px; box-shadow: 0 12px 32px #293d2d08; }
+.eyebrow { margin: 0 0 28px; font-size: 11px; line-height: 1.7; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #697867; }
+.mark { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 24px; border-radius: 50%; background: #e8efdf; color: #477952; font-size: 26px; }
+.card h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(32px, 5vw, 44px); font-weight: 400; letter-spacing: -.03em; line-height: 1.2; overflow-wrap: anywhere; }
+.description { margin: 20px 0 32px; color: #63715f; font-size: 15px; line-height: 1.8; }
+.actions { display: grid; gap: 14px; }
+.primaryButton, .secondaryButton { display: block; width: 100%; min-height: 50px; padding: 15px 20px; border: 0; border-radius: 10px; font-size: 14px; font-weight: 600; line-height: 1.5; text-align: center; text-decoration: none; cursor: pointer; }
+.primaryButton { background: #294f37; color: white; }
+.primaryButton:hover:enabled { background: #1e3f2b; }
+.secondaryButton { background: #eef2e7; color: #294f37; }
+.primaryButton:disabled, .secondaryButton:disabled { opacity: .55; cursor: not-allowed; }
+.page a:focus-visible, .page button:focus-visible { outline: 2px solid #477952; outline-offset: 4px; }
+.note, .status { margin: 4px 0 0; color: #68736a; font-size: 12px; text-align: center; line-height: 1.8; }
+.error { margin: 24px 0 0; padding: 14px; border: 1px solid #e5c4b5; border-radius: 8px; background: #fff4ec; color: #833a29; font-size: 13px; line-height: 1.7; }
+.footer { margin: 32px 0 0; padding-top: 24px; border-top: 1px solid #e3e6da; color: #73806d; font-size: 11px; line-height: 1.7; text-align: center; }
+@media (max-width: 600px) { .page { padding: 24px 18px; } .card { padding: 32px 24px; } }
