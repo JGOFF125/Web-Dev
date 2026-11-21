@@ -1,77 +1,68 @@
-"use client";
+"use client"
 
-import { useState } from "react";
 import Item from "./item";
+import { useState } from "react";
 
 export default function ItemList({ items, onItemSelect, selectedItemId }) {
-  const [sortBy, setSortBy] = useState("name");
+    const [sortBy, setSortBy] = useState("name");
+    
+    const sortedItems = [...items].sort((a, b) => {
+        if (sortBy === "name") {
+            return a.name.localeCompare(b.name);
+        }
+        return a.category.localeCompare(b.category);
+    });
 
-  // I sort a copy so the original list stays the same
-  const sortedItems = [...items].sort((a, b) => {
-    if (sortBy === "category") {
-      return a.category.localeCompare(b.category) || a.name.localeCompare(b.name);
-    }
+    const groupedItems = sortedItems.reduce((groups, item) => {
+        const group = item.category;
+        if (!groups[group]) {
+            groups[group] = [];
+        }
+        groups[group].push(item);
+        return groups;
+    }, {});
 
-    return a.name.localeCompare(b.name);
-  });
-
-  // I keep matching categories together
-  const groupedItems = sortedItems.reduce((groups, item) => {
-    if (!groups[item.category]) {
-      groups[item.category] = [];
-    }
-
-    groups[item.category].push(item);
-    return groups;
-  }, {});
-
-  return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-center gap-2" role="group" aria-label="Sort shopping list">
-        <span className="mr-2 font-semibold text-stone-700">Sort by:</span>
-        {[
-          { value: "name", label: "Name" },
-          { value: "category", label: "Category" },
-          { value: "group", label: "Group by category" },
-        ].map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => setSortBy(option.value)}
-            aria-pressed={sortBy === option.value}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors focus:outline-2 focus:outline-offset-2 focus:outline-amber-800 ${
-              sortBy === option.value
-                ? "bg-amber-800 text-white"
-                : "bg-stone-200 text-stone-800 hover:bg-stone-300"
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-
-      {sortBy === "group" ? (
-        <div className="space-y-6">
-          {Object.keys(groupedItems).sort().map((category) => (
-            <section key={category}>
-              <h2 className="border-b border-stone-300 pb-2 text-xl font-bold capitalize text-amber-800">
-                {category}
-              </h2>
-              <ul className="grid gap-4 md:grid-cols-2">
-                {groupedItems[category].map((item) => (
-                  <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} onSelect={() => onItemSelect(item)} selected={selectedItemId === item.id} />
-                ))}
-              </ul>
-            </section>
-          ))}
+    return (
+        <div>
+            <div className="space-x-3 mb-4">
+                <button onClick={() => setSortBy("name")} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold w-50 text-center py-2 px-4 rounded mb-4">Sort by Name</button>
+                <button onClick={() => setSortBy("category")} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold w-50 text-center py-2 px-4 rounded mb-4">Sort by Category</button>
+                <button onClick={() => setSortBy("group")} className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold w-50 text-center py-2 px-4 rounded mb-4">Group by Category</button>
+            </div>
+            {sortBy === "group" ? (
+                <div className="space-y-4">
+                    {Object.entries(groupedItems).map(([category, categoryItems]) => (
+                        <section key={category}>
+                            <h2 className="text-xl font-semibold text-gray-900">{category}</h2>
+                            <ul className="space-y-2">
+                                {categoryItems.map((item) => (
+                                    <Item
+                                        key={item.id}
+                                        id={item.id}
+                                        name={item.name}
+                                        category={item.category}
+                                        quantity={item.quantity}
+                                        selectedItemId={selectedItemId}
+                                        onSelect={() => onItemSelect(item)} />
+                                ))}
+                            </ul>
+                        </section>
+                    ))}
+                </div>
+            ) : (
+                <ul className="space-y-4">
+                    {sortedItems.map((item) => (
+                        <Item
+                            key={item.id}
+                            id={item.id}
+                            name={item.name}
+                            category={item.category}
+                            quantity={item.quantity}
+                            selectedItemId={selectedItemId}
+                            onSelect={() => onItemSelect(item)} />
+                    ))}
+                </ul>
+            )}
         </div>
-      ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {sortedItems.map((item) => (
-            <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} onSelect={() => onItemSelect(item)} selected={selectedItemId === item.id} />
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+    );
 }

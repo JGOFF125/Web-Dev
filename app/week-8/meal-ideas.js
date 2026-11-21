@@ -1,115 +1,64 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import styles from "./shopping-list.module.css";
 
 async function fetchMealIdeas(ingredient, signal) {
-  const query = encodeURIComponent(ingredient.replace(/\s+/g, "_"));
-  const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`, { signal });
-  if (!response.ok) throw new Error("The meal service is unavailable right now");
-  const data = await response.json();
-  const results = Array.isArray(data.meals) ? data.meals : [];
-  if (!results.length) return results;
-
-  try {
-    const mexicanResponse = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=Mexican", { signal });
-    if (!mexicanResponse.ok) return results;
-    const mexicanData = await mexicanResponse.json();
-    const mexicanIds = new Set((mexicanData.meals || []).map((meal) => meal.idMeal));
-
-    // I show Mexican matches first and keep the other meals too
-    return results.map((meal) => ({ ...meal, isMexican: mexicanIds.has(meal.idMeal) }))
-      .sort((a, b) => Number(b.isMexican) - Number(a.isMexican) || a.strMeal.localeCompare(b.strMeal));
-  } catch (error) {
-    if (signal?.aborted) throw error;
-    return results;
-  }
+    const response = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ingredient)}`,
+        { signal }
+    );
+    if (!response.ok) {
+        throw new Error("Unable to load meal ideas.");
+    }
+    const data = await response.json();
+    return data.meals ?? [];
 }
 
-export default function MealIdeas({ ingredient }) {
-  const [meals, setMeals] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [retryCount, setRetryCount] = useState(0);
+export function MealIdeas({ ingredient }) {
+    const [meals, setMeals] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!ingredient) return;
-    const controller = new AbortController();
-    let active = true;
-    const timeout = setTimeout(() => controller.abort(), 12000);
+    useEffect(() => {
+        const controller = new AbortController();
 
-    async function loadMealIdeas() {
-      setLoading(true);
-      setError("");
-      setMeals([]);
-      try {
-        const results = await fetchMealIdeas(ingredient, controller.signal);
-        if (active) setMeals(results);
-      } catch {
-        if (active) setError("I couldn’t load the meal ideas right now — please try again");
-      } finally {
-        clearTimeout(timeout);
-        if (active) setLoading(false);
-      }
-    }
+        fetchMealIdeas(ingredient, controller.signal)
+            .then(setMeals)
+            .catch((fetchError) => {
+                if (!controller.signal.aborted) {
+                    setError(fetchError);
+                }
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setIsLoading(false);
+                }
+            });
 
-    loadMealIdeas();
+        return () => {
+            controller.abort();
+        };
+    }, [ingredient]);
 
-    // I ignore the old request if another item gets selected
-    return () => {
-      active = false;
-      clearTimeout(timeout);
-      controller.abort();
-    };
-  }, [ingredient, retryCount]);
-
-  return (
-    <section className={styles.mealPanel} aria-labelledby="meal-heading" aria-busy={loading}>
-      <div className={styles.listHeader}>
+    return (
         <div>
-          <p className={styles.eyebrow}>A little inspiration</p>
-          <h2 id="meal-heading">Meal ideas</h2>
-          <p className={styles.cuisineHint}>Mexican favourites first, whenever there’s a match</p>
+            <h2 className="mt-4 mb-4 text-2xl font-bold">Meal ideas for {ingredient}</h2>
+            {isLoading ? (
+                <p>Loading meal ideas...</p>
+            ) : error ? (
+                <p role="alert">Could not load meal ideas. Please try again.</p>
+            ) : meals.length === 0 ? (
+                <p>No meal ideas found for the selected ingredient.</p>
+            ) : (
+                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {meals.map((meal) => (
+                        <li key={meal.idMeal}>
+                            <h3>{meal.strMeal}</h3>
+                            <img className="w-full rounded" src={meal.strMealThumb} alt={meal.strMeal} />
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
-        <span className={styles.listMark} aria-hidden="true">✦</span>
-      </div>
-
-      {!ingredient ? (
-        <div className={styles.emptyState}>
-          <span className={styles.emptyIcon} aria-hidden="true">↖</span>
-          <h3>What’s for dinner?</h3>
-          <p>Select an ingredient from your groceries and I’ll look for meal ideas</p>
-        </div>
-      ) : (
-        <>
-          <p className={styles.searchSummary}>On the menu with <strong>{ingredient}</strong></p>
-          <div role="status" aria-live="polite" className={styles.mealStatus}>
-            {loading ? "Finding something delicious…" : error || (meals.length ? `${meals.length} meal ideas found` : "No meal ideas found for this ingredient")}
-          </div>
-          {error ? (
-            <button type="button" className={styles.retryButton} onClick={() => setRetryCount((count) => count + 1)}>Try again</button>
-          ) : !loading && !meals.length ? (
-            <p className={styles.emptyHint}>Try another food item — household supplies and some ingredients won’t have recipes</p>
-          ) : null}
-          {!loading && !error && (
-            <ul className={styles.mealList}>
-              {meals.map((meal) => (
-                <li key={meal.idMeal} className={styles.mealCard}>
-                  {meal.strMealThumb && (
-                    <Image src={meal.strMealThumb} alt="" width={72} height={72} unoptimized className={styles.mealImage} />
-                  )}
-                  <div className={styles.mealDetails}>
-                    <h3>{meal.strMeal}</h3>
-                    {meal.isMexican && <span className={styles.mexicanBadge}>Mexican</span>}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
-      <p className={styles.attribution}>Meal ideas from <a href="https://www.themealdb.com/" target="_blank" rel="noreferrer">TheMealDB</a></p>
-    </section>
-  );
+    );
 }
