@@ -18,6 +18,7 @@ function authErrorMessage(error) {
     case "auth/account-exists-with-different-credential":
       return "This email already uses another sign-in method";
     case "auth/unauthorized-domain":
+      return "This preview address isn’t enabled for GitHub sign-in — open the live Week 9 site below";
     case "auth/operation-not-allowed":
     case "auth/invalid-api-key":
     case "auth/configuration-not-found":

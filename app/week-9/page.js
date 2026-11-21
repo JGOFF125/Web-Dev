@@ -36,7 +36,12 @@ export default function Page() {
               </p>
             </div>
           )}
-          {error && <p className={styles.error} role="alert">{error}</p>}
+          {error && (
+            <div className={styles.error} role="alert">
+              <p>{error}</p>
+              <a href="https://web-dev-nine-kappa.vercel.app/week-9">Open the live Week 9 site →</a>
+            </div>
+          )}
           <p className={styles.footer}>The everyday essentials, all in one place</p>
         </section>
       </div>
