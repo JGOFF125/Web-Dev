@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // I keep each person's groceries under users/{userId}/items/{itemId}
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validItem() {
+      let item = request.resource.data;
+      return item.keys().hasAll(['name', 'quantity', 'category'])
+        && item.keys().hasOnly(['name', 'quantity', 'category'])
+        && item.name is string
+        && item.name.size() >= 1 && item.name.size() <= 50
+        && item.name.matches('.*[^\\s].*')
+        && item.quantity is int && item.quantity >= 1 && item.quantity <= 20
+        && item.category in ['produce', 'dairy', 'bakery', 'meat', 'frozen foods',
+          'canned goods', 'dry goods', 'beverages', 'snacks', 'household', 'other'];
+    }
+
+    match /users/{userId}/items/{itemId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validItem();
+      allow delete: if isOwner(userId);
+    }
+  }
+}

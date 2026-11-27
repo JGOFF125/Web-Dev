@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:firestore": "node --test tests/firestore.test.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "encoding": "^0.1.14",
@@ -16,9 +18,13 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/react": "^16.3.3",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
-    "tailwindcss": "^4.3.3"
+    "jsdom": "^31.0.1",
+    "tailwindcss": "^4.3.3",
+    "vitest": "^5.1.2"
   }
 }
