@@ -2,7 +2,7 @@ import { before, after, beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { initializeTestEnvironment, assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, connectFirestoreEmulator, terminate } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, connectFirestoreEmulator, terminate, disableNetwork, enableNetwork } from "firebase/firestore";
 
 if (!process.env.FIRESTORE_EMULATOR_HOST) {
   throw new Error("Start the Firestore emulator before running these tests");
@@ -117,4 +117,15 @@ test("the Week 10 service saves only item fields and returns persistent document
   await assert.rejects(service.getItems("classmate"));
   await assert.rejects(service.addItem("classmate", validItem));
   await assert.rejects(service.getItems(""));
+});
+
+
+test("an offline cache is not shown as a confirmed saved list", async () => {
+  await service.getItems("joaquin");
+  await disableNetwork(serviceDb);
+  try {
+    await assert.rejects(service.getItems("joaquin"));
+  } finally {
+    await enableNetwork(serviceDb);
+  }
 });

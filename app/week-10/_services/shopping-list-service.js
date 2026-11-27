@@ -9,6 +9,8 @@ function itemsCollection(userId) {
 
 export async function getItems(userId) {
   const snapshot = await getDocs(query(itemsCollection(userId)));
+  // I wait for the server before showing the saved list
+  if (snapshot.metadata.fromCache) throw new Error("The saved list could not be confirmed with Firebase");
   return snapshot.docs.map((document) => ({ ...document.data(), id: document.id }));
 }
 

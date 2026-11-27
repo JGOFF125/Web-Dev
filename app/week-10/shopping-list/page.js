@@ -157,7 +157,7 @@ function ShoppingList() {
             <MealIdeas ingredient={selectedItemName} />
           </div>
         </div>
-        <p className={styles.footer}>{loadingItems ? "Opening your list" : loadError ? "Your list is unavailable right now" : "Made for the everyday · Groceries saved to your account"}</p>
+        <p className={styles.footer}>{saving ? "Waiting for Firebase to confirm your save" : loadingItems ? "Opening your list" : loadError ? "Your list is unavailable right now" : "Made for the everyday · Groceries saved to your account"}</p>
       </div>
     </main>
   );
