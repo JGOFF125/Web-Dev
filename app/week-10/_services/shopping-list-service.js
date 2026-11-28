@@ -1,4 +1,4 @@
-import { collection, getDocs, addDoc, query } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../_utils/firebase.js";
 
 function itemsCollection(userId) {
@@ -18,4 +18,9 @@ export async function addItem(userId, { name, quantity, category }) {
   // I only save the fields the list needs
   const document = await addDoc(itemsCollection(userId), { name, quantity, category });
   return document.id;
+}
+
+export async function deleteItem(userId, itemId) {
+  if (!itemId) throw new Error("Choose an item to remove");
+  await deleteDoc(doc(itemsCollection(userId), itemId));
 }

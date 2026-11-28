@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Item from "./item";
 
-export default function ItemList({ items, onItemSelect, selectedItemId }) {
+export default function ItemList({ items, onItemSelect, selectedItemId, onRemoveItem, removingId, removeDisabled }) {
   const [sortBy, setSortBy] = useState("name");
 
   // I sort a copy so the original list stays the same
@@ -59,7 +59,7 @@ export default function ItemList({ items, onItemSelect, selectedItemId }) {
               </h2>
               <ul className="grid gap-4 md:grid-cols-2">
                 {groupedItems[category].map((item) => (
-                  <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} onSelect={() => onItemSelect(item)} selected={selectedItemId === item.id} />
+                  <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} onSelect={() => onItemSelect(item)} selected={selectedItemId === item.id} onRemove={() => onRemoveItem(item)} removing={removingId === item.id} removeDisabled={removeDisabled || Boolean(removingId)} />
                 ))}
               </ul>
             </section>
@@ -68,7 +68,7 @@ export default function ItemList({ items, onItemSelect, selectedItemId }) {
       ) : (
         <ul className="grid gap-4 md:grid-cols-2">
           {sortedItems.map((item) => (
-            <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} onSelect={() => onItemSelect(item)} selected={selectedItemId === item.id} />
+            <Item key={item.id} name={item.name} quantity={item.quantity} category={item.category} onSelect={() => onItemSelect(item)} selected={selectedItemId === item.id} onRemove={() => onRemoveItem(item)} removing={removingId === item.id} removeDisabled={removeDisabled || Boolean(removingId)} />
           ))}
         </ul>
       )}
