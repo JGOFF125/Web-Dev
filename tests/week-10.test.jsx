@@ -6,16 +6,18 @@ const mocks = vi.hoisted(() => ({
   auth: { user: { uid: "joaquin" }, loading: false, pending: false, error: "", logOut: vi.fn() },
   getItems: vi.fn(),
   addItem: vi.fn(),
+  deleteItem: vi.fn(),
 }));
 
 vi.mock("../app/week-10/_utils/auth-context", () => ({ useUserAuth: () => mocks.auth }));
-vi.mock("../app/week-10/_services/shopping-list-service", () => ({ getItems: mocks.getItems, addItem: mocks.addItem }));
+vi.mock("../app/week-10/_services/shopping-list-service", () => ({ getItems: mocks.getItems, addItem: mocks.addItem, deleteItem: mocks.deleteItem }));
 
 beforeEach(() => {
   mocks.auth.user = { uid: "joaquin" };
   mocks.auth.loading = false;
   mocks.getItems.mockReset().mockResolvedValue([]);
   mocks.addItem.mockReset();
+  mocks.deleteItem.mockReset();
 });
 afterEach(cleanup);
 
@@ -96,4 +98,63 @@ test("signed-out visitors cannot load groceries", () => {
   render(<Page />);
   expect(screen.getByRole("link", { name: "Go to sign in" }).getAttribute("href")).toBe("/week-10");
   expect(mocks.getItems).not.toHaveBeenCalled();
+});
+
+
+test("removing a grocery waits for Firestore and stays removed after remount", async () => {
+  mocks.getItems.mockResolvedValueOnce([{ id: "milk", name: "Milk", quantity: 1, category: "dairy" }]);
+  let finishRemove;
+  mocks.deleteItem.mockImplementationOnce(() => new Promise((resolve) => { finishRemove = resolve; }));
+  const view = render(<Page />);
+  const button = await screen.findByRole("button", { name: "Remove Milk" });
+  fireEvent.click(button);
+  fireEvent.click(button);
+  expect(mocks.deleteItem).toHaveBeenCalledExactlyOnceWith("joaquin", "milk");
+  expect(screen.getByRole("button", { name: "Removing Milk" }).disabled).toBe(true);
+  expect(screen.getByText("Milk")).toBeTruthy();
+  expect(screen.getByText("What’s for dinner?")).toBeTruthy();
+  finishRemove();
+  await screen.findByText("Milk removed from your list");
+  expect(screen.queryByText("Milk")).toBe(null);
+  await screen.findByText("A fresh start");
+  view.unmount();
+  mocks.getItems.mockResolvedValue([]);
+  render(<Page />);
+  await screen.findByText("A fresh start");
+  expect(screen.queryByRole("button", { name: "Remove Milk" })).toBe(null);
+});
+
+test("a failed removal keeps the item and can be retried from a grouped list", async () => {
+  mocks.getItems.mockResolvedValue([{ id: "milk", name: "Milk", quantity: 1, category: "dairy" }]);
+  mocks.deleteItem.mockRejectedValueOnce(new Error("offline")).mockResolvedValueOnce(undefined);
+  render(<Page />);
+  await screen.findByText("Milk");
+  fireEvent.click(screen.getByRole("button", { name: "Group by category" }));
+  fireEvent.click(screen.getByRole("button", { name: "Remove Milk" }));
+  await screen.findByRole("alert");
+  expect(screen.getByText("Milk")).toBeTruthy();
+  const button = screen.getByRole("button", { name: "Remove Milk" });
+  expect(button.disabled).toBe(false);
+  fireEvent.click(button);
+  await screen.findByText("Milk removed from your list");
+  expect(screen.queryByRole("alert")).toBe(null);
+  expect(screen.queryByText("Milk")).toBe(null);
+});
+
+
+test("removing the selected ingredient clears its meal search", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ meals: [] }) }));
+  mocks.getItems.mockResolvedValue([{ id: "milk", name: "Milk", quantity: 1, category: "dairy" }]);
+  mocks.deleteItem.mockResolvedValue(undefined);
+  try {
+    render(<Page />);
+    await screen.findByText("Milk");
+    fireEvent.click(screen.getByRole("button", { name: /Milk\s*Quantity/ }));
+    await screen.findByText("milk", { exact: true });
+    fireEvent.click(screen.getByRole("button", { name: "Remove Milk" }));
+    await screen.findByText("Milk removed from your list");
+    await screen.findByText("What’s for dinner?");
+  } finally {
+    vi.unstubAllGlobals();
+  }
 });

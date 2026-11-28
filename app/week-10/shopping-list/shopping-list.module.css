@@ -159,3 +159,15 @@
 .submitButton:hover:disabled { background: #294f37; }
 .loadError { display: grid; gap: 18px; justify-items: start; }
 .loadError p { margin: 0; }
+
+.listPanel li.selectableItem { display: flex; align-items: center; gap: 8px; }
+.itemButton { flex: 1; min-width: 0; }
+.removeButton { flex-shrink: 0; min-height: 44px; border: 1px solid #dfcfc1; border-radius: 8px; background: #fff8f2; padding: 10px 12px; color: #854831; font-size: 12px; margin-right: 10px; }
+.removeButton:hover:enabled { background: #f6e8dc; }
+.removeButton:disabled { opacity: .6; cursor: wait; }
+.removeNotice { margin: 0 0 18px; color: #596f51; font-size: 13px; line-height: 1.6; }
+@media (max-width: 480px) {
+  .listPanel li.selectableItem { flex-wrap: wrap; gap: 0; padding-bottom: 12px; }
+  .selectableItem .itemButton { flex-basis: 100%; }
+  .removeButton { margin-left: 12px; }
+}

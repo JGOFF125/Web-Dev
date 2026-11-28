@@ -6,7 +6,7 @@ import NewItem from "./new-item";
 import ItemList from "./item-list";
 import MealIdeas from "./meal-ideas";
 import PantryIdeas from "./pantry-ideas";
-import { getItems, addItem } from "../_services/shopping-list-service";
+import { getItems, addItem, deleteItem } from "../_services/shopping-list-service";
 import styles from "./shopping-list.module.css";
 import { useUserAuth } from "../_utils/auth-context";
 import AuthGate from "../_utils/auth-gate";
@@ -28,6 +28,10 @@ function ShoppingList() {
   const [loadError, setLoadError] = useState("");
   const [saveError, setSaveError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [removingId, setRemovingId] = useState("");
+  const [removeError, setRemoveError] = useState("");
+  const [lastRemoved, setLastRemoved] = useState("");
+  const removingRef = useRef(false);
   const [retry, setRetry] = useState(0);
   const savingRef = useRef(false);
   const active = useRef(false);
@@ -76,6 +80,31 @@ function ShoppingList() {
     } finally {
       savingRef.current = false;
       if (active.current) setSaving(false);
+    }
+  }
+
+  async function handleRemoveItem(item) {
+    if (removingRef.current || pending) return;
+    removingRef.current = true;
+    setRemovingId(item.id);
+    setRemoveError("");
+    setLastRemoved("");
+    try {
+      await deleteItem(user.uid, item.id);
+      if (!active.current) return;
+      // I remove it from the screen after Firestore confirms
+      setItems((currentItems) => currentItems.filter((current) => current.id !== item.id));
+      if (selectedItemId === item.id) {
+        setSelectedItemId("");
+        setSelectedItemName("");
+      }
+      setLastAdded("");
+      setLastRemoved(item.name);
+    } catch {
+      if (active.current) setRemoveError(`${item.name} could not be removed — try again`);
+    } finally {
+      removingRef.current = false;
+      if (active.current) setRemovingId("");
     }
   }
 
@@ -132,6 +161,8 @@ function ShoppingList() {
                 </div>
                 <span className={styles.listMark} aria-hidden="true">✓</span>
               </div>
+              {removeError && <p role="alert" className={styles.authError}>{removeError}</p>}
+              {lastRemoved && <p role="status" className={styles.removeNotice}>{lastRemoved} removed from your list</p>}
               {loadingItems ? (
                 <p role="status" className={styles.emptyHint}>Loading your groceries…</p>
               ) : loadError ? (
@@ -148,7 +179,7 @@ function ShoppingList() {
                   <p>Add your first grocery above — it will be here when you come back</p>
                 </div>
               ) : (
-                <ItemList items={items} onItemSelect={handleItemSelect} selectedItemId={selectedItemId} />
+                <ItemList items={items} onItemSelect={handleItemSelect} selectedItemId={selectedItemId} onRemoveItem={handleRemoveItem} removingId={removingId} removeDisabled={pending} />
               )}
             </section>
           </div>

@@ -117,6 +117,11 @@ test("the Week 10 service saves only item fields and returns persistent document
   await assert.rejects(service.getItems("classmate"));
   await assert.rejects(service.addItem("classmate", validItem));
   await assert.rejects(service.getItems(""));
+  await assert.rejects(service.deleteItem("classmate", id));
+  await service.deleteItem("joaquin", id);
+  assert.deepEqual(await service.getItems("joaquin"), []);
+  assert.equal((await getDoc(doc(itemsFor("joaquin"), id))).exists(), false);
+  await assert.rejects(service.deleteItem("joaquin", ""));
 });
 
 
